@@ -1,3 +1,6 @@
 :root {
   --cMain: #008ef3;
+  --cMainOpacity: rgba(0, 142, 243, .1);
+  --cMainOpacityDark: rgba(0, 142, 243, .3);
+  --cMainDark: #0071c2;
 }

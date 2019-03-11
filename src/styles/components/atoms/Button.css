@@ -1,10 +1,32 @@
 .btn {
   height: 40px;
   padding: 8px 16px;
+  border: 0;
 }
+
 .btn--main {
   background: var(--cMain);
+  color: #fff;
 }
+.btn--main:hover {
+  background: var(--cMainDark);
+}
+
 .btn--phantom {
-  
+  background: transparent;
+  border: 2px solid var(--cMain);
+  color: var(--cMain);
+}
+.btn--phantom:hover {
+  background: var(--cMainOpacity);
+}
+
+.btn--opacity {
+  background: var(--cMainOpacity);
+  color: var(--cMain);
+  width: 100%;
+}
+
+.btn--opacity:hover {
+  background: var(--cMainOpacityDark);
 }
