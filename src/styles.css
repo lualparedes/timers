@@ -4,6 +4,6 @@
 
 @import url('./styles/components/atoms/Button.css');
 
-@import url('./styles/components/molecules/*.css');
+@import url('./styles/components/molecules/ButtonRow.css');
 
 @import url('./styles/components/organisms/*.css');
