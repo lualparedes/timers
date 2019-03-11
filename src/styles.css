@@ -1,9 +1,11 @@
 @import url('./styles/variables.css');
 @import url('./styles/reset.css');
 @import url('./styles/typography.css');
+@import url('./styles/layout.css');
 
 @import url('./styles/components/atoms/Button.css');
 
 @import url('./styles/components/molecules/ButtonRow.css');
+@import url('./styles/components/molecules/TimerCounter.css');
 
-@import url('./styles/components/organisms/*.css');
+@import url('./styles/components/organisms/Timer.css');

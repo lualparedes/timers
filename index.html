@@ -11,10 +11,21 @@
   <main class="timers">
 
       <div class="timer" id="timer-000">
-        <input class="timer__title">
-        <input class="timer__hours">
-        <input class="timer__minutes">
-        <input class="timer__seconds">
+        <input class="timer__title" value="Timer 1">
+        <div class="timer-counter">
+          <div class="timer-counter__hrs">
+            <input id="hrs" value="00">
+            <label for="hrs">h:</label>
+          </div>
+          <div class="timer-counter__min">
+            <input id="min" value="00">
+            <label for="min">m:</label>
+          </div>
+          <div class="timer-counter__sec">
+            <input id="sec" value="00">
+            <label for="sec">s</label>
+          </div>         
+        </div>
         <div class="btn-row">
           <button class="btn btn--main">Start</button>
           <button class="btn btn--phantom">Reset</button>
@@ -26,8 +37,8 @@
 
       <button class="btn btn--opacity">+</button>
 
-    </div>
   </main>
+</div>
 
 </body>
 </html>

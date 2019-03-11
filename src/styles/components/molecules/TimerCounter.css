@@ -1,0 +1,23 @@
+.timer-counter {
+  display: flex;
+  margin-bottom: 16px;
+}
+.timer-counter__hrs,
+.timer-counter__min,
+.timer-counter__sec {
+  display: flex;
+  align-items: flex-end;
+  font-size: 36px;
+}
+.timer-counter__hrs > input,
+.timer-counter__min > input,
+.timer-counter__sec > input {
+  max-width: 1.2em;
+  border: 0;
+  columns: 2;
+}
+.timer-counter__hrs > label,
+.timer-counter__min > label,
+.timer-counter__sec > label {
+  padding: 0 4px;
+}

@@ -6,3 +6,6 @@
   font-family: inherit;
   color: inherit;
 }
+*:focus {
+  outline: none;
+}
