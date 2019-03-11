@@ -5,16 +5,7 @@
 class TimerCounterValue {
 
   constructor(rawValueInSeconds) {
-
-    this.rawValueInSeconds = rawValueInSeconds;
-
-    let secondsLeft = rawValueInSeconds;
-
-    this.hrs = secondsLeft >= 3600 ? Math.floor(secondsLeft / 3600) : 0;
-    secondsLeft = secondsLeft - (this.hrs * 3600);
-    this.min = secondsLeft >= 60 ? Math.floor(secondsLeft / 60) : 0;
-    secondsLeft = secondsLeft - (this.min * 60);
-    this.sec = secondsLeft;
+    this.setTo(rawValueInSeconds);
   }
 
   get getRawValueInSeconds() {
@@ -28,6 +19,18 @@ class TimerCounterValue {
   }
   get getSeconds() {
     return this.sec;
+  }
+
+  setTo(rawValueInSeconds) {
+    this.rawValueInSeconds = rawValueInSeconds;
+
+    let secondsLeft = rawValueInSeconds;
+
+    this.hrs = secondsLeft >= 3600 ? Math.floor(secondsLeft / 3600) : 0;
+    secondsLeft = secondsLeft - (this.hrs * 3600);
+    this.min = secondsLeft >= 60 ? Math.floor(secondsLeft / 60) : 0;
+    secondsLeft = secondsLeft - (this.min * 60);
+    this.sec = secondsLeft;
   }
 
   subtractSeconds(secondsToSubtract) {
@@ -54,15 +57,7 @@ class TimerCounterValue {
         this.sec = 0;
       }
       else {
-        this.rawValueInSeconds -= secondsToSubtract;
-
-        let secondsLeft = this.rawValueInSeconds;
-
-        this.hrs = secondsLeft >= 3600 ? Math.floor(secondsLeft / 3600) : 0;
-        secondsLeft = secondsLeft - (this.hrs * 3600);
-        this.min = secondsLeft >= 60 ? Math.floor(secondsLeft / 60) : 0;
-        secondsLeft = secondsLeft - (this.min * 60);
-        this.sec = secondsLeft;
+        this.setTo(this.rawValueInSeconds - secondsToSubtract);
       }
     }
   }
