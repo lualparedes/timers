@@ -9,6 +9,7 @@ class Timer {
     this.hrs = 0;
     this.min = 0;
     this.sec = 0;
+    this.interval = null;
 
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
@@ -34,12 +35,32 @@ class Timer {
     this.isRunning = !this.isRunning;
   }
 
+  timeIsUp() {
+    if (this.hrs === 0 && this.min === 0 && this.sec === 0) {
+      return true;
+    }
+    return false;
+  }
+
+  alertTimeIsUp() {
+    window.alert(`${this.title} has finished!`);
+  }
+
+  updateCounter() {
+    if (this.timeIsUp()) {
+      this.alertTimeIsUp();
+      clearInterval(this.interval);
+    }
+    else {
+      console.log('update');
+    }
+  }
+
   reset() {
 
   }
 }
 
 (function () {
-  console.log('hello!');
   const timer = new Timer('000');
 }())
