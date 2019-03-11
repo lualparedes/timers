@@ -74,23 +74,30 @@ class Timer {
     this.elem = document.getElementById(this.elemId);
     this.isRunning = false;
     this.title = `Timer ${+timerId}`;
-    this.hrs = hrs;
-    this.min = min;
-    this.sec = sec;
+    this.initialTotalSeconds = hrs*3600 + min*60 + sec;
+    this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
     this.interval = null;
 
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
       this.startToggle.bind(this)
     );
+    this.elem.querySelector('.btn--phantom').addEventListener(
+      'click',
+      this.reset.bind(this)
+    );
   }
 
   start() {
-    console.log('start');
+    this.elem.querySelector('.btn--main').innerHTML = 'Pause';
+    this.interval = setInterval(() => {
+      this.updateCounter();
+    }, 1000);
   }
 
   pause() {
-    console.log('pause');
+    this.elem.querySelector('.btn--main').innerHTML = 'Start';
+    clearInterval(this.interval);
   }
 
   startToggle() {
@@ -104,7 +111,7 @@ class Timer {
   }
 
   timeIsUp() {
-    if (this.hrs === 0 && this.min === 0 && this.sec === 0) {
+    if (this.counterVal.getRawValueInSeconds === 0) {
       return true;
     }
     return false;
@@ -120,12 +127,14 @@ class Timer {
       clearInterval(this.interval);
     }
     else {
-      console.log('update');
+      this.counterVal.subtractSeconds(1);
+      console.log(this.counterVal.getRawValueInSeconds);
     }
   }
 
   reset() {
-
+    this.startToggle();
+    this.counterVal.setTo(this.initialTotalSeconds);
   }
 }
 
