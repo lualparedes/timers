@@ -356,7 +356,7 @@ class Timer {
   }
 
   alertTimeIsUp() {
-    window.alert(`${this.title} has finished!`);
+    window.alert(`${this.title.getState} has finished!`);
   }
 
   updateCounter() {
