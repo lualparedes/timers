@@ -3,6 +3,7 @@
   padding: 16px;
   margin-bottom: 16px;
   box-shadow: 0 0 4px 0 rgba(0,0,0,.25);
+  position: relative;
 }
 .timer__title {
   font-size: 20px;

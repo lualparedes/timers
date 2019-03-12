@@ -61,10 +61,10 @@ const SubjectMixin = {
 }
 
 /**
- * A wrapper around an InputHTMLElement that allows it to behave as an
+ * A wrapper around an HTMLElement that allows it to behave as an
  * <em>Observer</em>.
  */
-class ObserverInputElement {
+class ObserverElement {
 
   constructor(inputElem, subject, callback) {
     this.subject = subject;
@@ -73,7 +73,7 @@ class ObserverInputElement {
   }
 
   update() {
-    this.updater();
+    this.updater(this);
   }
 }
 
@@ -157,34 +157,45 @@ class Timer {
     this.title = `Timer ${+timerId}`;
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
-    this.hrsElem = new ObserverInputElement(
+    this.hrsElem = new ObserverElement(
       this.elem.querySelector(`#hrs-${this._id}`),
       this.counterVal,
-      function () {
-        this.elem.value = Utilities.fillDecimalPlaces(
-          this.subject.getHours.toString(),
+      (observer) =>  {
+        observer.elem.value = Utilities.fillDecimalPlaces(
+          observer.subject.getHours.toString(),
           2
         );
       }
     );
-    this.minElem = new ObserverInputElement(
+    this.minElem = new ObserverElement(
       this.elem.querySelector(`#min-${this._id}`),
       this.counterVal,
-      function () {
-        this.elem.value = Utilities.fillDecimalPlaces(
-          this.subject.getMinutes.toString(),
+      (observer) => {
+        observer.elem.value = Utilities.fillDecimalPlaces(
+          observer.subject.getMinutes.toString(),
           2
         );
       }
     );
-    this.secElem = new ObserverInputElement(
+    this.secElem = new ObserverElement(
       this.elem.querySelector(`#sec-${this._id}`),
       this.counterVal,
-      function () {
-        this.elem.value = Utilities.fillDecimalPlaces(
-          this.subject.getSeconds.toString(),
+      (observer) => {
+        observer.elem.value = Utilities.fillDecimalPlaces(
+          observer.subject.getSeconds.toString(),
           2
         );
+      }
+    );
+    this.progressBarElem = new ObserverElement(
+      this.elem.querySelector(`#progress-bar-${this._id}`),
+      this.counterVal,
+      (observer) => {
+        observer.elem.querySelector('.progress-bar__bar').style.width
+          = `${(
+          (this.initialTotalSeconds - observer.subject.getRawValueInSeconds) /
+          this.initialTotalSeconds
+          )*100}%`;
       }
     );
     this.interval = null;
@@ -199,10 +210,12 @@ class Timer {
       this.reset.bind(this)
     );
 
-    // Attach observers
+    // Attach observers and notify the initial state
     this.counterVal.attach(this.hrsElem);
     this.counterVal.attach(this.minElem);
     this.counterVal.attach(this.secElem);
+    this.counterVal.attach(this.progressBarElem);
+    this.counterVal.notify();
 
     // ======== RANDOM STUFF ========
     this.elem.querySelector('#sec-000').addEventListener(

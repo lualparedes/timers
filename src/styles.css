@@ -7,5 +7,6 @@
 
 @import url('./styles/components/molecules/ButtonRow.css');
 @import url('./styles/components/molecules/TimerCounter.css');
+@import url('./styles/components/molecules/ProgressBar.css');
 
 @import url('./styles/components/organisms/Timer.css');

@@ -1,0 +1,14 @@
+.progress-bar {
+  height: 4px;
+  background: var(--cMainOpacity);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.progress-bar__bar {
+  height: 4px;
+  background: var(--cMain);
+  width: 0%;
+  transition: all .2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
