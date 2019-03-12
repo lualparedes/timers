@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Library with useful methods of general application.
  */
@@ -21,15 +22,42 @@ const Utilities = {
     }
 
     return str;
-  }
+  },
+
+  /**
+   * Expands a class using a mixin.
+   *
+   * @param supplier - Mixin object.
+   * @param receiver - Class that will be expanded.
+   */
+  addMixin: (supplier, receiver) => {
+    for (let key in supplier) {
+      if (supplier.hasOwnProperty(key)) {
+        receiver.prototype[key] = supplier[key];
+      }
+    }
+  }, 
 }
 
 /**
  * Expands a class to behave as a <em>Subject</em> in the <em>Observer</em>
  * pattern.
  */
-let SubjectMixin = {
-  
+const SubjectMixin = {
+  attach: function (observer) {
+    this.observers = this.observers || [];
+    this.observers.push(observer);
+  },
+  dettach: function (observer) {
+    this.observers = this.observers || [];
+    this.observers.splice(this.observers.indexOf(observer));
+  },
+  notify: function () {
+    this.observers = this.observers || [];
+    this.observers.forEach((observer) => {
+      observer.update();
+    });
+  }
 }
 
 /**
@@ -45,22 +73,19 @@ class ObserverInputElement {
   }
 
   update() {
-    this.updater(this);
+    this.updater();
   }
 }
 
 /**
  * Represents a time value that has hours, minutes, and seconds. This class
  * provides useful methods to add/substract times like regular integers and also
- * works as a <em>Subject</em> in the <em>Observer</em> pattern.
+ * works as a <em>Subject</em> in the <em>Observer</em> pattern using a mixin.
  */
 class TimerCounterValue {
 
   constructor(rawValueInSeconds) {
     this.setTo(rawValueInSeconds);
-    /* TODO: refactor into a Subject mixin */
-    this.observers = [];
-    /* END TODO */
   }
 
   get getRawValueInSeconds() {
@@ -116,23 +141,8 @@ class TimerCounterValue {
       }
     }
   }
-
-  /* TODO: refactor into a Subject mixin */
-  attach(observer) {
-    this.observers.push(observer);
-  }
-
-  dettach(observer) {
-    this.observers.splice(this.observers.indexOf(observer));
-  }
-
-  notify() {
-    this.observers.forEach((observer) => {
-      observer.update();
-    });
-  }
-  /* END TODO */
 }
+Utilities.addMixin(SubjectMixin, TimerCounterValue);
 
 /**
  * Represents a timer
@@ -150,9 +160,9 @@ class Timer {
     this.hrsElem = new ObserverInputElement(
       this.elem.querySelector(`#hrs-${this._id}`),
       this.counterVal,
-      (self) => {
-        self.elem.value = Utilities.fillDecimalPlaces(
-          self.subject.getHours.toString(),
+      function () {
+        this.elem.value = Utilities.fillDecimalPlaces(
+          this.subject.getHours.toString(),
           2
         );
       }
@@ -160,9 +170,9 @@ class Timer {
     this.minElem = new ObserverInputElement(
       this.elem.querySelector(`#min-${this._id}`),
       this.counterVal,
-      (self) => {
-        self.elem.value = Utilities.fillDecimalPlaces(
-          self.subject.getMinutes.toString(),
+      function () {
+        this.elem.value = Utilities.fillDecimalPlaces(
+          this.subject.getMinutes.toString(),
           2
         );
       }
@@ -170,9 +180,9 @@ class Timer {
     this.secElem = new ObserverInputElement(
       this.elem.querySelector(`#sec-${this._id}`),
       this.counterVal,
-      (self) => {
-        self.elem.value = Utilities.fillDecimalPlaces(
-          self.subject.getSeconds.toString(),
+      function () {
+        this.elem.value = Utilities.fillDecimalPlaces(
+          this.subject.getSeconds.toString(),
           2
         );
       }
@@ -322,9 +332,8 @@ function Test() {
 }
 
 (function () {
+
   const timer = new Timer('000', 0, 1, 5);
 
-  console.log(Timer.prototype);
-
-  Test();
+  //Test();
 }())
