@@ -1,8 +1,27 @@
 /**
  * Library with useful methods of general application.
  */
-class Utilities {
+const Utilities = {
   
+  /**
+   * Adds left zeroes as padding to return a string of exactly n characters.
+   *
+   * @note {1} An array was used to avoid wasting memory.
+   */
+  fillDecimalPlaces: (str, n) => {
+    const paddingNeed = n - str.length;
+    const paddedStrArr = []; // {1}
+
+    if (paddingNeed > 0) {
+      for (let i = 0; i < paddingNeed; i++) {
+        paddedStrArr.push('0');
+      }
+      paddedStrArr.push(str);
+      return paddedStrArr.join('');
+    }
+
+    return str;
+  }
 }
 
 /**
@@ -131,17 +150,32 @@ class Timer {
     this.hrsElem = new ObserverInputElement(
       this.elem.querySelector(`#hrs-${this._id}`),
       this.counterVal,
-      (self) => { self.elem.value = self.subject.getHours; }
+      (self) => {
+        self.elem.value = Utilities.fillDecimalPlaces(
+          self.subject.getHours.toString(),
+          2
+        );
+      }
     );
     this.minElem = new ObserverInputElement(
       this.elem.querySelector(`#min-${this._id}`),
       this.counterVal,
-      (self) => { self.elem.value = self.subject.getMinutes; }
+      (self) => {
+        self.elem.value = Utilities.fillDecimalPlaces(
+          self.subject.getMinutes.toString(),
+          2
+        );
+      }
     );
     this.secElem = new ObserverInputElement(
       this.elem.querySelector(`#sec-${this._id}`),
       this.counterVal,
-      (self) => { self.elem.value = self.subject.getSeconds; }
+      (self) => {
+        self.elem.value = Utilities.fillDecimalPlaces(
+          self.subject.getSeconds.toString(),
+          2
+        );
+      }
     );
     this.interval = null;
 
@@ -197,7 +231,10 @@ class Timer {
   updateInputUI(e) {
     const inputEl = e.target;
     if (!this.isValid(e.key)) {
-      inputEl.value = this.counterVal.getSeconds.toString();
+      inputEl.value = Utilities.fillDecimalPlaces(
+        this.counterVal.getSeconds.toString(),
+        2
+      );
     }
     if (inputEl.value.length > 2) {
       inputEl.value = inputEl.value.slice(1);
@@ -251,7 +288,16 @@ class Timer {
   reset() {
     this.startToggle();
     this.counterVal.setTo(this.initialTotalSeconds);
+    this.counterVal.notify();
   }
+}
+
+function UtilitiesTest() {
+  console.log('Testing Utilities...');
+
+  console.log('\tfillDecimalPlaces works');
+  console.assert(Utilities.fillDecimalPlaces('1', 2) === '01');
+  console.assert(Utilities.fillDecimalPlaces('11', 2) === '11');
 }
 
 function TimerCounterValueTest() {
@@ -270,8 +316,15 @@ function TimerCounterValueTest() {
   console.assert(counterVal.getSeconds === 59);
 }
 
-(function () {
-  const timer = new Timer('000', 0, 0, 0);
-
+function Test() {
+  UtilitiesTest();
   TimerCounterValueTest();
+}
+
+(function () {
+  const timer = new Timer('000', 0, 1, 5);
+
+  console.log(Timer.prototype);
+
+  Test();
 }())
