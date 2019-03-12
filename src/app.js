@@ -1,11 +1,47 @@
 /**
+ * Library with useful methods of general application.
+ */
+class Utilities {
+  
+}
+
+/**
+ * Expands a class to behave as a <em>Subject</em> in the <em>Observer</em>
+ * pattern.
+ */
+let SubjectMixin = {
+  
+}
+
+/**
+ * A wrapper around an InputHTMLElement that allows it to behave as an
+ * <em>Observer</em>.
+ */
+class ObserverInputElement {
+
+  constructor(inputElem, subject, callback) {
+    this.subject = subject;
+    this.elem = inputElem;
+    this.updater = callback;
+  }
+
+  update() {
+    this.updater(this);
+  }
+}
+
+/**
  * Represents a time value that has hours, minutes, and seconds. This class
- * provides useful methods to add/substract times like regular integers.
+ * provides useful methods to add/substract times like regular integers and also
+ * works as a <em>Subject</em> in the <em>Observer</em> pattern.
  */
 class TimerCounterValue {
 
   constructor(rawValueInSeconds) {
     this.setTo(rawValueInSeconds);
+    /* TODO: refactor into a Subject mixin */
+    this.observers = [];
+    /* END TODO */
   }
 
   get getRawValueInSeconds() {
@@ -61,6 +97,22 @@ class TimerCounterValue {
       }
     }
   }
+
+  /* TODO: refactor into a Subject mixin */
+  attach(observer) {
+    this.observers.push(observer);
+  }
+
+  dettach(observer) {
+    this.observers.splice(this.observers.indexOf(observer));
+  }
+
+  notify() {
+    this.observers.forEach((observer) => {
+      observer.update();
+    });
+  }
+  /* END TODO */
 }
 
 /**
@@ -76,8 +128,24 @@ class Timer {
     this.title = `Timer ${+timerId}`;
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
+    this.hrsElem = new ObserverInputElement(
+      this.elem.querySelector(`#hrs-${this._id}`),
+      this.counterVal,
+      (self) => { self.elem.value = self.subject.getHours; }
+    );
+    this.minElem = new ObserverInputElement(
+      this.elem.querySelector(`#min-${this._id}`),
+      this.counterVal,
+      (self) => { self.elem.value = self.subject.getMinutes; }
+    );
+    this.secElem = new ObserverInputElement(
+      this.elem.querySelector(`#sec-${this._id}`),
+      this.counterVal,
+      (self) => { self.elem.value = self.subject.getSeconds; }
+    );
     this.interval = null;
 
+    // Click events for buttons
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
       this.startToggle.bind(this)
@@ -86,6 +154,54 @@ class Timer {
       'click',
       this.reset.bind(this)
     );
+
+    // Attach observers
+    this.counterVal.attach(this.hrsElem);
+    this.counterVal.attach(this.minElem);
+    this.counterVal.attach(this.secElem);
+
+    // ======== RANDOM STUFF ========
+    this.elem.querySelector('#sec-000').addEventListener(
+      'keyup',
+      this.updateInputUI.bind(this)
+    );
+  }
+
+  // ======== RANDOM STUFF ========
+  isValid(key) {
+    let valid = false;
+    const VALID_KEYS = [
+      'Backspace',
+      'ArrowRight',
+      'ArrowLeft',
+      '0',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9'
+    ];
+    VALID_KEYS.forEach((validKey) => {
+      if (key === validKey) {
+        valid = true;
+      }
+    });
+    return valid;
+  }
+
+  // ======== RANDOM STUFF ========
+  updateInputUI(e) {
+    const inputEl = e.target;
+    if (!this.isValid(e.key)) {
+      inputEl.value = this.counterVal.getSeconds.toString();
+    }
+    if (inputEl.value.length > 2) {
+      inputEl.value = inputEl.value.slice(1);
+    }
   }
 
   start() {
@@ -128,7 +244,7 @@ class Timer {
     }
     else {
       this.counterVal.subtractSeconds(1);
-      console.log(this.counterVal.getRawValueInSeconds);
+      this.counterVal.notify();
     }
   }
 

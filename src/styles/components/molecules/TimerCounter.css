@@ -15,6 +15,7 @@
   max-width: 1.2em;
   border: 0;
   columns: 2;
+  text-align: right;
 }
 .timer-counter__hrs > label,
 .timer-counter__min > label,
