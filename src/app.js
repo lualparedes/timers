@@ -76,6 +76,61 @@ class ObserverElement {
     this.updater(this);
   }
 }
+/**
+ * A wrapper around an object property that allows it to behave as a
+ * <em>Subject</em>.
+ */
+class SubjectProp {
+
+  constructor(initialState) {
+    this.subjectState = initialState;
+    this.observerElements = [];
+  }
+
+  attach(observer) {
+    this.observerElements.push(observer);
+  }
+
+  dettach(observer) {
+    this.observerElements.slice(this.observerElements.indexOf(observer));
+  }
+
+  notify() {
+    this.observerElements.forEach((observer) => {
+      observer.updateAsObserver();
+    });
+  }
+
+  get getState() {
+    return this.subjectState;
+  }
+
+  setState(newState) {
+    this.subjectState = newState;
+  }
+}
+
+/**
+ * A wrapper around an HTMLElement that allows it to behave as an
+ * <em>Observer</em>.
+ */
+class ObserverElem {
+
+  constructor(elem, subjectProp) {
+    this.elem = elem;
+    this.subjectProp = subjectProp;
+
+    this.elem.addEventListener('keyup', this.updateAsSubject.bind(this));
+  }
+
+  updateAsObserver() {
+    this.elem.value = this.subjectProp.getState;
+  }
+
+  updateAsSubject() {
+    this.subjectProp.setState(this.elem.value);
+  }
+}
 
 /**
  * Represents a time value that has hours, minutes, and seconds. This class
@@ -154,7 +209,11 @@ class Timer {
     this.elemId = `timer-${timerId}`;
     this.elem = document.getElementById(this.elemId);
     this.isRunning = false;
-    this.title = `Timer ${+timerId}`;
+    this.title = new SubjectProp(`Timer ${+timerId}`);
+    this.titleElem = new ObserverElem(
+      this.elem.querySelector(`#title-${this._id}`),
+      this.title
+    );
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
     this.hrsElem = new ObserverElement(
@@ -216,6 +275,9 @@ class Timer {
     this.counterVal.attach(this.secElem);
     this.counterVal.attach(this.progressBarElem);
     this.counterVal.notify();
+
+    this.title.attach(this.titleElem);
+    this.title.notify();
 
     // ======== RANDOM STUFF ========
     this.elem.querySelector('#sec-000').addEventListener(
