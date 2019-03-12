@@ -116,11 +116,13 @@ class SubjectProp {
  */
 class ObserverElem {
 
-  constructor(elem, subjectProp) {
+  constructor(elem, subjectProp, dualBinding) {
     this.elem = elem;
     this.subjectProp = subjectProp;
 
-    this.elem.addEventListener('keyup', this.updateAsSubject.bind(this));
+    if (dualBinding) {
+      this.elem.addEventListener('keyup', this.updateAsSubject.bind(this));
+    }
   }
 
   updateAsObserver() {
@@ -212,7 +214,8 @@ class Timer {
     this.title = new SubjectProp(`Timer ${+timerId}`);
     this.titleElem = new ObserverElem(
       this.elem.querySelector(`#title-${this._id}`),
-      this.title
+      this.title,
+      true
     );
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
