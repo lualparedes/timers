@@ -116,9 +116,10 @@ class SubjectProp {
  */
 class ObserverElem {
 
-  constructor(elem, subjectProp, dualBinding) {
+  constructor(elem, subjectProp, updaterAsObserver, dualBinding) {
     this.elem = elem;
     this.subjectProp = subjectProp;
+    this.updater = updaterAsObserver;
 
     if (dualBinding) {
       this.elem.addEventListener('keyup', this.updateAsSubject.bind(this));
@@ -126,7 +127,7 @@ class ObserverElem {
   }
 
   updateAsObserver() {
-    this.elem.value = this.subjectProp.getState;
+    this.updater(this);
   }
 
   updateAsSubject() {
@@ -215,6 +216,9 @@ class Timer {
     this.titleElem = new ObserverElem(
       this.elem.querySelector(`#title-${this._id}`),
       this.title,
+      (observer) => {
+        observer.elem.value = observer.subjectProp.getState;
+      },
       true
     );
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
