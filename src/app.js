@@ -259,7 +259,17 @@ class Timer {
     );
     this.interval = null;
 
-    // Click events for buttons
+    this.addEventListenersToButtons();
+    this.initSubjectsAndObservers();
+
+    // ======== RANDOM STUFF ========
+    this.elem.querySelector('#sec-000').addEventListener(
+      'keyup',
+      this.updateInputUI.bind(this)
+    );
+  }
+
+  addEventListenersToButtons() {
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
       this.startToggle.bind(this)
@@ -268,8 +278,9 @@ class Timer {
       'click',
       this.reset.bind(this)
     );
+  }
 
-    // Attach observers and notify the initial state
+  initSubjectsAndObservers() {
     this.counterVal.attach(this.hrsElem);
     this.counterVal.attach(this.minElem);
     this.counterVal.attach(this.secElem);
@@ -278,12 +289,6 @@ class Timer {
 
     this.title.attach(this.titleElem);
     this.title.notify();
-
-    // ======== RANDOM STUFF ========
-    this.elem.querySelector('#sec-000').addEventListener(
-      'keyup',
-      this.updateInputUI.bind(this)
-    );
   }
 
   // ======== RANDOM STUFF ========
