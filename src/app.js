@@ -219,10 +219,24 @@ class Timer {
 
   constructor(timerId, hrs, min, sec) {
     this._id = timerId;
-    this.elemId = `timer-${timerId}`;
-    this.elem = document.getElementById(this.elemId);
+    this.elem = document.getElementById(`timer-${timerId}`);
     this.isRunning = false;
-    this.title = new SubjectProp(`Timer ${+timerId}`);
+    this.interval = null;
+    this.initialTotalSeconds = hrs*3600 + min*60 + sec;
+
+    this.createSubjectsAndObservers();
+    this.initSubjectsAndObservers();
+    this.addEventListenersToButtons();
+
+    /* ======== RANDOM STUFF ========
+    this.elem.querySelector('#sec-000').addEventListener(
+      'keyup',
+      this.updateInputUI.bind(this)
+    );*/
+  }
+
+  createSubjectsAndObservers() {
+    this.title = new SubjectProp(`Timer ${+this._id}`);
     this.titleElem = new ObserverElem(
       this.elem.querySelector(`#title-${this._id}`),
       this.title,
@@ -231,7 +245,6 @@ class Timer {
       },
       true
     );
-    this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
     this.hrsElem = new ObserverElem(
       this.elem.querySelector(`#hrs-${this._id}`),
@@ -241,7 +254,8 @@ class Timer {
           observer.subjectProp.getHours.toString(),
           2
         );
-      }
+      },
+      true
     );
     this.minElem = new ObserverElem(
       this.elem.querySelector(`#min-${this._id}`),
@@ -251,7 +265,8 @@ class Timer {
           observer.subjectProp.getMinutes.toString(),
           2
         );
-      }
+      },
+      true
     );
     this.secElem = new ObserverElem(
       this.elem.querySelector(`#sec-${this._id}`),
@@ -261,7 +276,8 @@ class Timer {
           observer.subjectProp.getSeconds.toString(),
           2
         );
-      }
+      },
+      true
     );
     this.progressBarElem = new ObserverElem(
       this.elem.querySelector(`#progress-bar-${this._id}`),
@@ -273,27 +289,6 @@ class Timer {
           this.initialTotalSeconds
           )*100}%`;
       }
-    );
-    this.interval = null;
-
-    this.addEventListenersToButtons();
-    this.initSubjectsAndObservers();
-
-    // ======== RANDOM STUFF ========
-    this.elem.querySelector('#sec-000').addEventListener(
-      'keyup',
-      this.updateInputUI.bind(this)
-    );
-  }
-
-  addEventListenersToButtons() {
-    this.elem.querySelector('.btn--main').addEventListener(
-      'click',
-      this.startToggle.bind(this)
-    );
-    this.elem.querySelector('.btn--phantom').addEventListener(
-      'click',
-      this.reset.bind(this)
     );
   }
 
@@ -308,7 +303,18 @@ class Timer {
     this.title.notify();
   }
 
-  // ======== RANDOM STUFF ========
+  addEventListenersToButtons() {
+    this.elem.querySelector('.btn--main').addEventListener(
+      'click',
+      this.startToggle.bind(this)
+    );
+    this.elem.querySelector('.btn--phantom').addEventListener(
+      'click',
+      this.reset.bind(this)
+    );
+  }
+
+  /* ======== RANDOM STUFF ========
   isValid(key) {
     let valid = false;
     const VALID_KEYS = [
@@ -332,9 +338,9 @@ class Timer {
       }
     });
     return valid;
-  }
+  }*/
 
-  // ======== RANDOM STUFF ========
+  /* ======== RANDOM STUFF ========
   updateInputUI(e) {
     const inputEl = e.target;
     if (!this.isValid(e.key)) {
@@ -346,7 +352,7 @@ class Timer {
     if (inputEl.value.length > 2) {
       inputEl.value = inputEl.value.slice(1);
     }
-  }
+  }*/
 
   start() {
     this.elem.querySelector('.btn--main').innerHTML = 'Pause';
@@ -448,7 +454,7 @@ function Test() {
 
 (function () {
 
-  const timer = new Timer('000', 0, 1, 5);
+  const timer = new Timer('000', 0, 0, 5);
 
   //Test();
 }())
