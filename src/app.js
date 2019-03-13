@@ -57,6 +57,29 @@ const SubjectPropMixin = {
     this.observerElements.forEach((observer) => {
       observer.updateAsObserver();
     });
+  },
+  /**
+   * @param {customGetter} Optional function with the following signature:
+   *        (thisSubject): any
+   */
+  getState: function (customGetter) {
+    if (customGetter) {
+      return customGetter(this);
+    }
+    return this.subjectState;
+  },
+  /**
+   * @param {newState} Any
+   * @param {customSetter} Optional function with the following signature:
+   *        (thisSubject, newState): void
+   */
+  setState: function (newState, customSetter) {
+    if (customSetter) {
+      customSetter(this, newState);
+    }
+    else {
+      this.subjectState = newState;
+    }
   }
 }
 
@@ -76,6 +99,7 @@ class ObserverElement {
     this.updater(this);
   }
 }
+
 /**
  * A wrapper around an object property that allows it to behave as a
  * <em>Subject</em>.
@@ -85,14 +109,6 @@ class SubjectProp {
   constructor(initialState) {
     this.subjectState = initialState;
     this.observerElements = [];
-  }
-
-  get getState() {
-    return this.subjectState;
-  }
-
-  setState(newState) {
-    this.subjectState = newState;
   }
 }
 Utilities.addMixin(SubjectPropMixin, SubjectProp);
@@ -219,7 +235,7 @@ class Timer {
       this.elem.querySelector(`#title-${this._id}`),
       this.title,
       (observer) => {
-        observer.elem.value = observer.subjectProp.getState;
+        observer.elem.value = observer.subjectProp.getState();
       },
       true
     );
@@ -370,7 +386,7 @@ class Timer {
   }
 
   alertTimeIsUp() {
-    window.alert(`${this.title.getState} has finished!`);
+    window.alert(`${this.title.getState()} has finished!`);
   }
 
   updateCounter() {
