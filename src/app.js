@@ -345,17 +345,8 @@ class Timer {
   }
 
   isValid(input) {
-
     const VALID_KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    let valid = false;
-
-    VALID_KEYS.forEach((validKey) => {
-      if (input.substr(-1) === validKey) {
-        valid = true;
-      }
-    });
-
-    return valid;
+    return VALID_KEYS.some((validKey) => input.substr(-1) === validKey);
   }
 
   start() {
@@ -396,10 +387,7 @@ class Timer {
   }
 
   timeIsUp() {
-    if (this.counterVal.getRawValueInSeconds === 0) {
-      return true;
-    }
-    return false;
+    return this.counterVal.getRawValueInSeconds === 0;
   }
 
   updateCounter() {
