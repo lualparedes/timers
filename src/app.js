@@ -236,6 +236,7 @@ class Timer {
     this._id = timerId;
     this.elem = document.getElementById(`timer-${timerId}`);
     this.isRunning = false;
+    this.isAlerting = false;
     this.interval = null;
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.numOfStartsSinceInitialRun = 0;
@@ -348,6 +349,8 @@ class Timer {
   }
 
   addEventListeners() {
+    // Timer card
+    this.elem.addEventListener('click', this.clearAlert.bind(this));
     // Buttons
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
@@ -410,6 +413,20 @@ class Timer {
     return this.counterVal.getRawValueInSeconds === 0;
   }
 
+  alertTimeIsUp() {
+    this.isAlerting = true;
+    this.elem.classList.add('timer--alerting');
+    document.getElementById('audio-file').play();
+  }
+
+  clearAlert() {
+    if (this.isAlerting) {
+      this.isAlerting = false;
+      this.elem.classList.remove('timer--alerting');
+      document.getElementById('audio-file').pause();
+    }
+  }
+
   updateCounter() {
     if (this.timeIsUp()) {
 
@@ -419,7 +436,7 @@ class Timer {
       this.numOfStartsSinceInitialRun = 0;
 
       // UI
-      window.alert(`${this.title.getState()} has finished!`);
+      this.alertTimeIsUp();
       this.elem.querySelector('.btn--main').innerHTML = 'Start';
     }
     else {
@@ -499,8 +516,6 @@ function Test() {
 }
 
 (function () {
-
-  Window.timer = new Timer('000', 0, 0, 0);
-
+  timer = new Timer('000', 0, 0, 0);
   //Test();
 }())

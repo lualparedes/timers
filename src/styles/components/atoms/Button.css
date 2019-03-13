@@ -30,3 +30,7 @@
 .btn--opacity:hover {
   background: var(--cMainOpacityDark);
 }
+
+#add-timer-button {
+  display: none;
+}

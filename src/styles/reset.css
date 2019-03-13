@@ -9,3 +9,7 @@
 *:focus {
   outline: none;
 }
+
+input {
+  background: transparent;
+}
