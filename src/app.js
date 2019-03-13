@@ -106,7 +106,7 @@ class ObserverElem {
 
   /**
    * @param {elem} HTMLElement that will act as observer.
-   * @param {subjectProp} SubjectProp to wich this ObserverElem is attached.
+   * @param {subjectProp} SubjectProp to which this ObserverElem is attached.
    * @param {updaterAsObserver} Function with signature (thisObserver): void.
    * @param {dualBinding} Optional boolean indicating if this element also
    *        sends updates to its SubjectProp.
@@ -147,7 +147,7 @@ class ObserverElem {
 
 /**
  * Represents a time value that has hours, minutes, and seconds. This class
- * provides useful methods to add/substract times like regular integers and also
+ * provides useful methods to add/subtract times like regular integers and also
  * works as a <em>Subject</em> in the <em>Observer</em> pattern using a mixin.
  */
 class TimerCounterValue {
@@ -480,7 +480,7 @@ function TimerCounterValueTest() {
   console.log('Testing TimerCounterValue...');
   const counterVal = new TimerCounterValue(3661);
 
-  console.log('\tconstrtuctor works');
+  console.log('\tconstructor works');
   console.assert(counterVal.getHours === 1);
   console.assert(counterVal.getMinutes === 1);
   console.assert(counterVal.getSeconds === 1);
