@@ -159,6 +159,21 @@ class TimerCounterValue {
     return this.sec;
   }
 
+  setHours(newHrs) {
+    const diff = newHrs*3600 - this.hrs*3600;
+    this.setTo(this.rawValueInSeconds + diff);
+  }
+
+  setMinutes(newMin) {
+    const diff = newMin*60 - this.min*60;
+    this.setTo(this.rawValueInSeconds + diff);
+  }
+
+  setSeconds(newSec) {
+    const diff = newSec - this.sec;
+    this.setTo(this.rawValueInSeconds + diff);
+  }
+
   setTo(rawValueInSeconds) {
     this.rawValueInSeconds = rawValueInSeconds;
 
@@ -168,7 +183,7 @@ class TimerCounterValue {
     secondsLeft = secondsLeft - (this.hrs * 3600);
     this.min = secondsLeft >= 60 ? Math.floor(secondsLeft / 60) : 0;
     secondsLeft = secondsLeft - (this.min * 60);
-    this.sec = secondsLeft;
+    this.sec = secondsLeft >= 0 ? secondsLeft : 0;
   }
 
   subtractSeconds(secondsToSubtract) {
@@ -392,7 +407,7 @@ class Timer {
 function UtilitiesTest() {
   console.log('Testing Utilities...');
 
-  console.log('\tfillDecimalPlaces works');
+  console.log('\tfillDecimalPlaces() works');
   console.assert(Utilities.fillDecimalPlaces('1', 2) === '01');
   console.assert(Utilities.fillDecimalPlaces('11', 2) === '11');
 }
@@ -406,11 +421,29 @@ function TimerCounterValueTest() {
   console.assert(counterVal.getMinutes === 1);
   console.assert(counterVal.getSeconds === 1);
 
-  console.log('\tsubtractSeconds works');
+  console.log('\tsubtractSeconds() works');
   counterVal.subtractSeconds(2);
   console.assert(counterVal.getHours === 1);
   console.assert(counterVal.getMinutes === 0);
   console.assert(counterVal.getSeconds === 59);
+
+  console.log('\tsetHours() works');
+  counterVal.setHours(2);
+  console.assert(counterVal.getHours === 2);
+  console.assert(counterVal.getMinutes === 0);
+  console.assert(counterVal.getSeconds === 59);
+
+  console.log('\tsetMinutes() works');
+  counterVal.setMinutes(1);
+  console.assert(counterVal.getHours === 2);
+  console.assert(counterVal.getMinutes === 1);
+  console.assert(counterVal.getSeconds === 59);
+
+  console.log('\tsetSeconds() works');
+  counterVal.setSeconds(2);
+  console.assert(counterVal.getHours === 2);
+  console.assert(counterVal.getMinutes === 1);
+  console.assert(counterVal.getSeconds === 2);
 }
 
 function Test() {
