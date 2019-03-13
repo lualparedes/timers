@@ -60,7 +60,8 @@ const SubjectPropMixin = {
   },
   /**
    * @param {customGetter} Optional function with the following signature:
-   *        (thisSubject): any
+   *        (thisSubject): any. It is used to define a special getter for a type
+   *        with complex state.
    */
   getState: function (customGetter) {
     if (customGetter) {
@@ -71,7 +72,8 @@ const SubjectPropMixin = {
   /**
    * @param {newState} Any
    * @param {customSetter} Optional function with the following signature:
-   *        (thisSubject, newState): void
+   *        (thisSubject, newState): void. It is used to define a special setter
+   *        for a type with complex state.
    */
   setState: function (newState, customSetter) {
     if (customSetter) {
@@ -102,13 +104,16 @@ Utilities.addMixin(SubjectPropMixin, SubjectProp);
  */
 class ObserverElem {
 
-  constructor(elem, subjectProp, updaterAsObserver, dualBinding) {
+  constructor(elem, subjectProp, updaterAsObserver, dualBinding, customSetter) {
     this.elem = elem;
     this.subjectProp = subjectProp;
     this.updater = updaterAsObserver;
 
     if (dualBinding) {
-      this.elem.addEventListener('keyup', this.updateAsSubject.bind(this));
+      this.elem.addEventListener(
+        'keyup',
+        this.updateAsSubject.bind(this, customSetter)
+      );
     }
   }
 
@@ -116,8 +121,12 @@ class ObserverElem {
     this.updater(this);
   }
 
-  updateAsSubject() {
-    this.subjectProp.setState(this.elem.value);
+  /**
+   * @param {customSetter} Optional function with signature (newState): void. It
+   *        is used to substitute the default setState in subjectProp.
+   */
+  updateAsSubject(customSetter) {
+    this.subjectProp.setState(this.elem.value, customSetter);
   }
 }
 
