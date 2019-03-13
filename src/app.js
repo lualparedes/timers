@@ -255,6 +255,7 @@ class Timer {
       },
       true
     );
+
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
     this.hrsElem = new ObserverElem(
       this.elem.querySelector(`#hrs-${this._id}`),
@@ -265,7 +266,18 @@ class Timer {
           2
         );
       },
-      true
+      true,
+      (subjectCounter, newStateInput) => {
+        const newState = newStateInput.length > 2
+          ? newStateInput.slice(1)
+          : newStateInput;
+        if (this.isValid(newState)) {
+          subjectCounter.setHours(newState);
+        }
+        if (newState.length === 2) {
+          subjectCounter.notify();
+        }
+      }
     );
     this.minElem = new ObserverElem(
       this.elem.querySelector(`#min-${this._id}`),
@@ -276,7 +288,18 @@ class Timer {
           2
         );
       },
-      true
+      true,
+      (subjectCounter, newStateInput) => {
+        const newState = newStateInput.length > 2
+          ? newStateInput.slice(1)
+          : newStateInput;
+        if (this.isValid(newState)) {
+          subjectCounter.setMinutes(newState);
+        }
+        if (newState.length === 2) {
+          subjectCounter.notify();
+        }
+      }
     );
     this.secElem = new ObserverElem(
       this.elem.querySelector(`#sec-${this._id}`),
@@ -289,15 +312,12 @@ class Timer {
       },
       true,
       (subjectCounter, newStateInput) => {
-
         const newState = newStateInput.length > 2
           ? newStateInput.slice(1)
           : newStateInput;
-
         if (this.isValid(newState)) {
           subjectCounter.setSeconds(newState);
         }
-
         if (newState.length === 2) {
           subjectCounter.notify();
         }
