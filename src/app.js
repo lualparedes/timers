@@ -84,23 +84,6 @@ const SubjectPropMixin = {
 }
 
 /**
- * A wrapper around an HTMLElement that allows it to behave as an
- * <em>Observer</em>.
- */
-class ObserverElement {
-
-  constructor(inputElem, subject, callback) {
-    this.subject = subject;
-    this.elem = inputElem;
-    this.updater = callback;
-  }
-
-  updateAsObserver() {
-    this.updater(this);
-  }
-}
-
-/**
  * A wrapper around an object property that allows it to behave as a
  * <em>Subject</em>.
  */
@@ -241,43 +224,43 @@ class Timer {
     );
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
     this.counterVal = new TimerCounterValue(this.initialTotalSeconds);
-    this.hrsElem = new ObserverElement(
+    this.hrsElem = new ObserverElem(
       this.elem.querySelector(`#hrs-${this._id}`),
       this.counterVal,
       (observer) =>  {
         observer.elem.value = Utilities.fillDecimalPlaces(
-          observer.subject.getHours.toString(),
+          observer.subjectProp.getHours.toString(),
           2
         );
       }
     );
-    this.minElem = new ObserverElement(
+    this.minElem = new ObserverElem(
       this.elem.querySelector(`#min-${this._id}`),
       this.counterVal,
       (observer) => {
         observer.elem.value = Utilities.fillDecimalPlaces(
-          observer.subject.getMinutes.toString(),
+          observer.subjectProp.getMinutes.toString(),
           2
         );
       }
     );
-    this.secElem = new ObserverElement(
+    this.secElem = new ObserverElem(
       this.elem.querySelector(`#sec-${this._id}`),
       this.counterVal,
       (observer) => {
         observer.elem.value = Utilities.fillDecimalPlaces(
-          observer.subject.getSeconds.toString(),
+          observer.subjectProp.getSeconds.toString(),
           2
         );
       }
     );
-    this.progressBarElem = new ObserverElement(
+    this.progressBarElem = new ObserverElem(
       this.elem.querySelector(`#progress-bar-${this._id}`),
       this.counterVal,
       (observer) => {
         observer.elem.querySelector('.progress-bar__bar').style.width
           = `${(
-          (this.initialTotalSeconds - observer.subject.getRawValueInSeconds) /
+          (this.initialTotalSeconds - observer.subjectProp.getRawValueInSeconds) /
           this.initialTotalSeconds
           )*100}%`;
       }
