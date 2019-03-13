@@ -242,7 +242,7 @@ class Timer {
 
     this.createSubjectsAndObservers();
     this.initSubjectsAndObservers();
-    this.addEventListenersToButtons();
+    this.addEventListeners();
   }
 
   createSubjectsAndObservers() {
@@ -327,7 +327,8 @@ class Timer {
     this.title.notify();
   }
 
-  addEventListenersToButtons() {
+  addEventListeners() {
+    // Buttons
     this.elem.querySelector('.btn--main').addEventListener(
       'click',
       this.startToggle.bind(this)
@@ -335,6 +336,11 @@ class Timer {
     this.elem.querySelector('.btn--phantom').addEventListener(
       'click',
       this.reset.bind(this)
+    );
+    // Inputs
+    this.elem.querySelector('.timer-counter').addEventListener(
+      'keyup',
+      this.waitForNewCounter.bind(this)
     );
   }
 
@@ -419,6 +425,21 @@ class Timer {
     this.numOfStartsSinceInitialRun = 0;
     this.counterVal.setTo(this.initialTotalSeconds);
     this.counterVal.notify();
+  }
+
+  waitForNewCounter(e) {
+
+    // Data
+    this.isRunning = false;
+    clearInterval(this.interval);
+    this.numOfStartsSinceInitialRun = 0;
+
+    // UI
+    this.elem.querySelector('.btn--main').innerHTML = 'Start';
+
+    if (e.key === 'Enter') {
+      this.start();
+    }
   }
 }
 
