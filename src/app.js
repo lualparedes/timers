@@ -516,6 +516,6 @@ function Test() {
 }
 
 (function () {
-  timer = new Timer('000', 0, 0, 0);
+  const timer = new Timer('000', 0, 0, 0);
   //Test();
 }())
