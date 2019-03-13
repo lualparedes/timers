@@ -43,19 +43,19 @@ const Utilities = {
  * Expands a class to behave as a <em>Subject</em> in the <em>Observer</em>
  * pattern.
  */
-const SubjectMixin = {
+const SubjectPropMixin = {
   attach: function (observer) {
-    this.observers = this.observers || [];
-    this.observers.push(observer);
+    this.observerElements = this.observerElements || [];
+    this.observerElements.push(observer);
   },
   dettach: function (observer) {
-    this.observers = this.observers || [];
-    this.observers.splice(this.observers.indexOf(observer));
+    this.observerElements = this.observerElements || [];
+    this.observerElements.slice(this.observerElements.indexOf(observer));
   },
   notify: function () {
-    this.observers = this.observers || [];
-    this.observers.forEach((observer) => {
-      observer.update();
+    this.observerElements = this.observerElements || [];
+    this.observerElements.forEach((observer) => {
+      observer.updateAsObserver();
     });
   }
 }
@@ -72,7 +72,7 @@ class ObserverElement {
     this.updater = callback;
   }
 
-  update() {
+  updateAsObserver() {
     this.updater(this);
   }
 }
@@ -87,20 +87,6 @@ class SubjectProp {
     this.observerElements = [];
   }
 
-  attach(observer) {
-    this.observerElements.push(observer);
-  }
-
-  dettach(observer) {
-    this.observerElements.slice(this.observerElements.indexOf(observer));
-  }
-
-  notify() {
-    this.observerElements.forEach((observer) => {
-      observer.updateAsObserver();
-    });
-  }
-
   get getState() {
     return this.subjectState;
   }
@@ -109,6 +95,7 @@ class SubjectProp {
     this.subjectState = newState;
   }
 }
+Utilities.addMixin(SubjectPropMixin, SubjectProp);
 
 /**
  * A wrapper around an HTMLElement that allows it to behave as an
@@ -215,7 +202,7 @@ class TimerCounterValue {
     }
   }
 }
-Utilities.addMixin(SubjectMixin, TimerCounterValue);
+Utilities.addMixin(SubjectPropMixin, TimerCounterValue);
 
 /**
  * Represents a timer
