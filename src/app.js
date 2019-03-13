@@ -104,10 +104,26 @@ Utilities.addMixin(SubjectPropMixin, SubjectProp);
  */
 class ObserverElem {
 
-  constructor(elem, subjectProp, updaterAsObserver, dualBinding, customSetter) {
+  /**
+   * @param {elem} HTMLElement that will act as observer.
+   * @param {subjectProp} SubjectProp to wich this ObserverElem is attached.
+   * @param {updaterAsObserver} Function with signature (thisObserver): void.
+   * @param {dualBinding} Optional boolean indicating if this element also
+   *        sends updates to its SubjectProp.
+   * @param {customSetter} Optional function with signature (newState): void. It
+   *        is used to substitute the default setState in subjectProp.
+   */
+  constructor(
+    elem,
+    subjectProp,
+    updaterAsObserver,
+    dualBinding,
+    customSetter
+  ) {
+
     this.elem = elem;
     this.subjectProp = subjectProp;
-    this.updater = updaterAsObserver;
+    this.updaterAsObserver = updaterAsObserver;
 
     if (dualBinding) {
       this.elem.addEventListener(
@@ -118,12 +134,11 @@ class ObserverElem {
   }
 
   updateAsObserver() {
-    this.updater(this);
+    this.updaterAsObserver(this);
   }
 
   /**
-   * @param {customSetter} Optional function with signature (newState): void. It
-   *        is used to substitute the default setState in subjectProp.
+   * Updates the <em>subject</em> state if dual binding is active.
    */
   updateAsSubject(customSetter) {
     this.subjectProp.setState(this.elem.value, customSetter);
@@ -223,16 +238,11 @@ class Timer {
     this.isRunning = false;
     this.interval = null;
     this.initialTotalSeconds = hrs*3600 + min*60 + sec;
+    this.numOfStartsSinceInitialRun = 0;
 
     this.createSubjectsAndObservers();
     this.initSubjectsAndObservers();
     this.addEventListenersToButtons();
-
-    /* ======== RANDOM STUFF ========
-    this.elem.querySelector('#sec-000').addEventListener(
-      'keyup',
-      this.updateInputUI.bind(this)
-    );*/
   }
 
   createSubjectsAndObservers() {
@@ -277,7 +287,21 @@ class Timer {
           2
         );
       },
-      true
+      true,
+      (subjectCounter, newStateInput) => {
+
+        const newState = newStateInput.length > 2
+          ? newStateInput.slice(1)
+          : newStateInput;
+
+        if (this.isValid(newState)) {
+          subjectCounter.setSeconds(newState);
+        }
+
+        if (newState.length === 2) {
+          subjectCounter.notify();
+        }
+      }
     );
     this.progressBarElem = new ObserverElem(
       this.elem.querySelector(`#progress-bar-${this._id}`),
@@ -314,56 +338,46 @@ class Timer {
     );
   }
 
-  /* ======== RANDOM STUFF ========
-  isValid(key) {
+  isValid(input) {
+
+    const VALID_KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let valid = false;
-    const VALID_KEYS = [
-      'Backspace',
-      'ArrowRight',
-      'ArrowLeft',
-      '0',
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9'
-    ];
+
     VALID_KEYS.forEach((validKey) => {
-      if (key === validKey) {
+      if (input.substr(-1) === validKey) {
         valid = true;
       }
     });
-    return valid;
-  }*/
 
-  /* ======== RANDOM STUFF ========
-  updateInputUI(e) {
-    const inputEl = e.target;
-    if (!this.isValid(e.key)) {
-      inputEl.value = Utilities.fillDecimalPlaces(
-        this.counterVal.getSeconds.toString(),
-        2
-      );
-    }
-    if (inputEl.value.length > 2) {
-      inputEl.value = inputEl.value.slice(1);
-    }
-  }*/
+    return valid;
+  }
 
   start() {
-    this.elem.querySelector('.btn--main').innerHTML = 'Pause';
+
+    // Data
+    this.isRunning = true;
+    this.numOfStartsSinceInitialRun++;
     this.interval = setInterval(() => {
       this.updateCounter();
     }, 1000);
+
+    if (this.numOfStartsSinceInitialRun === 1) {
+      this.initialTotalSeconds = this.counterVal.getRawValueInSeconds;
+      this.counterVal.notify();
+    }
+
+    // UI
+    this.elem.querySelector('.btn--main').innerHTML = 'Pause';
   }
 
   pause() {
-    this.elem.querySelector('.btn--main').innerHTML = 'Start';
+
+    // Data
+    this.isRunning = false;
     clearInterval(this.interval);
+
+    // UI
+    this.elem.querySelector('.btn--main').innerHTML = 'Start';
   }
 
   startToggle() {
@@ -373,7 +387,6 @@ class Timer {
     else {
       this.start();
     }
-    this.isRunning = !this.isRunning;
   }
 
   timeIsUp() {
@@ -383,14 +396,17 @@ class Timer {
     return false;
   }
 
-  alertTimeIsUp() {
-    window.alert(`${this.title.getState()} has finished!`);
-  }
-
   updateCounter() {
     if (this.timeIsUp()) {
-      this.alertTimeIsUp();
+
+      // Data
       clearInterval(this.interval);
+      this.isRunning = false;
+      this.numOfStartsSinceInitialRun = 0;
+
+      // UI
+      window.alert(`${this.title.getState()} has finished!`);
+      this.elem.querySelector('.btn--main').innerHTML = 'Start';
     }
     else {
       this.counterVal.subtractSeconds(1);
@@ -400,6 +416,7 @@ class Timer {
 
   reset() {
     this.startToggle();
+    this.numOfStartsSinceInitialRun = 0;
     this.counterVal.setTo(this.initialTotalSeconds);
     this.counterVal.notify();
   }
@@ -454,7 +471,7 @@ function Test() {
 
 (function () {
 
-  const timer = new Timer('000', 0, 0, 5);
+  Window.timer = new Timer('000', 0, 0, 0);
 
   //Test();
 }())
