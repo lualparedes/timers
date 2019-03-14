@@ -5,6 +5,7 @@ Timer app.
 ## Possible future features
 
 - Support for creating several timers.
+- Rewrite using TypeScript.
 
 ## Credits
 
